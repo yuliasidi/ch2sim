@@ -46,8 +46,8 @@ dt_all <- dt_sample%>%
                 r = ifelse(pmiss > pthresh, 1, 0))%>%
   dplyr::select(-c(pmiss, pthresh))
 
-#the below condition added in order to make sure that at least 3 responses are observed in the survey
-while(length(dt_all$r[dt_all$r==0])<3){
+#the below condition added in order to make sure that at least 4 responses are observed in the survey
+while(length(dt_all$r[dt_all$r==0])<4){
 
   dt_all <- dt_sample%>%
     dplyr::mutate(pmiss = 1/(1 + exp(- int - b1*x/10)),
@@ -74,10 +74,12 @@ mdsur_mi <- m2_mi(dt_obs, num_m = 10)%>%
   dplyr::mutate(sd_l = sqrt(t))%>%
   dplyr::select(mean_l, sd_l, n_l)
 
-mdsur_sing <- dt_all%>%
-  dplyr::sample_n(1)%>%
-  dplyr::select(lambda)%>%
-  dplyr::rename(mean_l = lambda)%>%
+mdsur_smin <- dt_obs%>%
+  dplyr::summarise(mean_l = min(lambda, na.rm = T))%>%
+  dplyr::mutate(sd_l = 0, n_l = 1)
+
+mdsur_smax <- dt_obs%>%
+  dplyr::summarise(mean_l = max(lambda, na.rm = T))%>%
   dplyr::mutate(sd_l = 0, n_l = 1)
 
 #generate trial data:
@@ -88,9 +90,10 @@ dt0 <- bin2mi::dt_p2(n = n_obs, pc = pc, pt = pt)
 mdall_des  <- ci_sur(mdsur_all, dt0, type = 'all')
 mdobs_des  <- ci_sur(mdsur_obs, dt0, type = 'obs') 
 mdmi_des   <- ci_sur(mdsur_mi, dt0, type = 'mi')
-mdsing_des <- ci_sur(mdsur_sing, dt0, type = 'sing')
+mdmin_des <- ci_sur(mdsur_smin, dt0, type = 'sing min')
+mdmax_des <- ci_sur(mdsur_smax, dt0, type = 'sing max')
 
-ct_des <- bind_rows(mdall_des, mdobs_des, mdmi_des, mdsing_des)%>%
+ct_des <- bind_rows(mdall_des, mdobs_des, mdmi_des, mdmin_des, mdmax_des)%>%
   dplyr::mutate(sim_id = x)
 
 out <- list(ct_des)%>%

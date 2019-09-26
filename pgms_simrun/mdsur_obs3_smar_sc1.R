@@ -7,7 +7,7 @@ library(m2imp)
 
 alpha <- 0.025
 power <- 0.85
-cor_xl <- 0.7
+cor_xl <- 0.4
 pc <- 0.8
 pt <- 0.825
 m1 <- 0.23
@@ -16,6 +16,10 @@ n_obs <- 250
 
 #rate of clinical experts opinios we observe
 obs_rate <- 0.03
+
+#drop-out rates for subject level data
+do_rate <- 0.2
+
 #parameters tbu in the clinical experts opinions model (to calculate probability to be non/observed) 
 b1 <- - 0.8
 xcov <- matrix(c(4^2, 4*0.05*cor_xl, 4*0.05*cor_xl, 0.05^2), 2, 2)
@@ -27,7 +31,7 @@ x1 <- parallel::mclapply(X = 1:1000,
                          FUN= function(x){
                            
 #population of physicians consists of 1000 doctors
-set.seed(100*2 + x)
+set.seed(100*1 + x)
 dt_pop0 <- mvrnorm(1000, mu = c(15, 0.7), Sigma = xcov)
 
 dt_pop <- tibble::tibble(x = dt_pop0[,1],
@@ -83,8 +87,25 @@ mdsur_smax <- dt_obs%>%
   dplyr::mutate(sd_l = 0, n_l = 1)
 
 #generate trial data:
-set.seed(200*2 + x)
-dt0 <- bin2mi::dt_p2(n = n_obs, pc = pc, pt = pt)
+set.seed(200*1 + x)
+dt0 <- bin2mi::dt_p2(n = n_obs, pc = pc, pt = pt, add_xcont = T)
+
+#impose missingness in the subject level data based on x
+b1_subj <- -0.2
+b3_subj <-  0.22
+int_subj <- log(do_rate/(1 - do_rate)) - b1_subj*mean(dt0$x) - b3_subj*mean(dt0$x)*0.5
+
+dt0_miss <- dt0%>%
+  dplyr::mutate(trtn = ifelse(trt=='t', 1, 0),
+                pmiss = 1/(1 + exp(- int_subj - b1_subj*x - b3_subj*x*trtn)),
+                pthresh = runif(n()),
+                r = ifelse(pmiss > pthresh, 1, 0))%>%
+  dplyr::select(-c(pmiss, pthresh))
+
+do_ch <- dt0_miss%>%group_by(trt)%>%summarise(do=mean(r))
+p_ch <- dt0_miss%>%group_by(trt,r)%>%summarise(pcca=mean(y))
+
+
 
 #calculate ci and derive decision based on the full/obs/mi/sing cohort of MDs
 mdall_des  <- ci_sur(mdsur_all, dt0, type = 'all')
@@ -102,5 +123,5 @@ out <- list(ct_des)%>%
                        
 })
 
-saveRDS(x1, "results/mdsu_obs3_sc2.rds")  
+saveRDS(x1, "results/mdsu_obs3_sc1.rds")  
 
