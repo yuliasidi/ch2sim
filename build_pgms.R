@@ -23,3 +23,23 @@ purrr::pwalk(.l = setting.l,
                  ),
                  sep='\n')
              })
+
+purrr::pwalk(.l = setting.l,
+             .f = function(cor_xl, pc, pt, n_obs, set_n){
+               cat(
+                 whisker::whisker.render(
+                   readLines('tmpls/mdsur_obs3_checkdf.tmpl'),
+                   data = list(
+                     cor_xl = cor_xl,
+                     pc = pc,
+                     pt = pt,
+                     n_obs = n_obs,
+                     set_n = set_n)
+                 ),
+                 file = file.path('checks/dfchecks/pgms',
+                                  sprintf("mdsur_obs3_dfcheck_sc%s.R",
+                                          set_n)
+                 ),
+                 sep='\n')
+             })
+
