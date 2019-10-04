@@ -17,13 +17,14 @@ n_obs <- 500
 #rate of clinical experts opinios we observe
 obs_rate <- 0.03
 #parameters tbu in the clinical experts opinions model (to calculate probability to be non/observed) 
-b1 <- - 0.8
+b1 <- - 0.08
 xcov <- matrix(c(4^2, 4*0.05*cor_xl, 4*0.05*cor_xl, 0.05^2), 2, 2)
 
+#number of imputations for the MDs survey
+num_m_md <- 20 
 
-
-x1 <- parallel::mclapply(X = 1:1000, 
-                         mc.cores = 7,
+x1 <- parallel::mclapply(X = 1:5000, 
+                         mc.cores = 24,
                          FUN= function(x){
                            
 #population of physicians consists of 1000 doctors
@@ -37,11 +38,11 @@ dt_pop <- tibble::tibble(x = dt_pop0[,1],
 dt_sample <- dt_pop%>%
   dplyr::sample_frac(size = 0.3)
 
-int <- log((1 - obs_rate)/obs_rate) - b1*mean(dt_sample$x)/10
+int <- log((1 - obs_rate)/obs_rate) - b1*mean(dt_sample$x)
 
 #observe only k physicians
 dt_all <- dt_sample%>%
-  dplyr::mutate(pmiss = 1/(1 + exp(- int - b1*x/10)),
+  dplyr::mutate(pmiss = 1/(1 + exp(- int - b1*x)),
                 pthresh = runif(n()),
                 r = ifelse(pmiss > pthresh, 1, 0))%>%
   dplyr::select(-c(pmiss, pthresh))
@@ -50,7 +51,7 @@ dt_all <- dt_sample%>%
 while(length(dt_all$r[dt_all$r==0])<4){
 
   dt_all <- dt_sample%>%
-    dplyr::mutate(pmiss = 1/(1 + exp(- int - b1*x/10)),
+    dplyr::mutate(pmiss = 1/(1 + exp(- int - b1*x)),
                   pthresh = runif(n()),
                   r = ifelse(pmiss > pthresh, 1, 0))%>%
     dplyr::select(-c(pmiss, pthresh))
@@ -69,10 +70,9 @@ mdsur_obs <- dt_all%>%
 dt_obs <- dt_all%>%
   dplyr::mutate(lambda = ifelse(r==0, lambda, NA))
 
-mdsur_mi <- m2_mi(dt_obs, num_m = 10)%>%
+mdsur_mi <- m2_mi(dt_obs, num_m = num_m_md)%>%
   dplyr::rename(mean_l = qbar)%>%
-  dplyr::mutate(sd_l = sqrt(t))%>%
-  dplyr::select(mean_l, sd_l, n_l)
+  dplyr::mutate(sd_l = sqrt(t))
 
 mdsur_smin <- dt_obs%>%
   dplyr::summarise(mean_l = min(lambda, na.rm = T))%>%
