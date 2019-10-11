@@ -9,7 +9,7 @@ alpha <- 0.025
 power <- 0.85
 cor_xl <- 0.4
 pc <- 0.8
-pt <- 0.8
+pt <- 0.75
 m1 <- 0.23
 n_obs <- 250
 
@@ -91,11 +91,11 @@ dt0 <- bin2mi::dt_p2(n = n_obs, pc = pc, pt = pt, add_xcont = TRUE)
 
 
 #impose missingness in the subject level data based on x
-dt0_miss <- dt_miss_pert(dt0, do_ratec = do_rate, do_ratet = do_rate, bxmc = -0.015, bxmt = 0.02)
+dt0_miss <- dt_miss_pert(dt0, do_ratec = do_rate, do_ratet = do_rate, bxmc = 0, bxmt = 0)
 
 do_ch <- 
   dt0_miss%>%group_by(trt)%>%summarise(do=mean(r))
-p_ch <- 
+ p_ch <- 
    dt0_miss%>%group_by(trt, r)%>%summarise(xmean = mean(x), pcca = mean(y, na.rm = T))%>%
    dplyr::left_join(dt0%>%group_by(trt)%>%summarise(pfull = mean(y)), by = 'trt')
    
@@ -118,7 +118,5 @@ out <- list(ct_des, do_ch, p_ch)%>%
                        
 })
 
-
-
-saveRDS(x1, "results/mdsu_obs3_smar_sc3.rds")  
+saveRDS(x1, "results/mdsu_obs3_smcar_test3.rds")  
 

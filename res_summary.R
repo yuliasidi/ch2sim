@@ -30,7 +30,24 @@ res_sum <-
 
 res_sum%>%dplyr::select(sur, md_m2, set_n)%>%filter(sur%in%c('all', 'obs', 'mi'))%>%spread(key='sur', value='md_m2')
 saveRDS(res_sum, "sums/sum_mdsu_obs3.rds")
-  
+
+
+minfo <-
+  map_df(ll, 
+         .f = function(sc) {
+   x1 <- readRDS(list.files("results", paste0("mdsu_obs3_sc", sc, ".rds"), full.names = T))
+   x2 <- x1%>%
+    purrr::map_df(.f=function(x) x$ct_des, .id = 'sim')%>%
+     filter(sur%in%c('mi'))%>%
+     mutate(minfo = b/(ubar + b))%>%
+     dplyr::select(sim, minfo)%>%
+     dplyr::mutate(set_n = sc)%>%
+     dplyr::left_join(setting, by = "set_n")%>%
+     dplyr::mutate(pc = pc, pt = pt, n_obs = n_obs, cor_xl = cor_xl)
+           
+  })
+
+saveRDS(minfo, "sums/minfo_mdsu_obs3.rds")
 
 
 #########################################################################
@@ -61,6 +78,24 @@ res_sum1 <-
 res_sum1%>%dplyr::select(sur, md_m2, set_n)%>%filter(sur%in%c('all', 'obs', 'mi'))%>%spread(key='sur', value='md_m2')
 
 saveRDS(res_sum1, "sums/sum_mdsu_obs3r.rds")
+
+
+minfo1 <-
+  map_df(ll, 
+         .f = function(sc) {
+           x1 <- readRDS(list.files("results", paste0("mdsu_obs3r_sc", sc, ".rds"), full.names = T))
+           x2 <- x1%>%
+             purrr::map_df(.f=function(x) x$ct_des, .id = 'sim')%>%
+             filter(sur%in%c('mi'))%>%
+             mutate(minfo = b/(ubar + b))%>%
+             dplyr::select(sim, minfo)%>%
+             dplyr::mutate(set_n = sc)%>%
+             dplyr::left_join(setting, by = "set_n")%>%
+             dplyr::mutate(pc = pc, pt = pt, n_obs = n_obs, cor_xl = cor_xl)
+           
+         })
+
+saveRDS(minfo1, "sums/minfo_mdsu_obs3r.rds")
 
 ################################
 # Patient data are MCAR        #
@@ -112,11 +147,29 @@ res_sum2%>%dplyr::select(sur, md_m2, set_n)%>%filter(sur%in%c('all', 'obs', 'mi'
 saveRDS(res_sum2, "sums/sum_mdsu_obs3_smcar.rds")
 
 
+minfo2 <-
+  map_df(ll, 
+         .f = function(sc) {
+           x1 <- readRDS(list.files("results/mcar", paste0("mdsu_obs3_smcar_sc", sc, ".rds"), full.names = T))
+           x2 <- x1%>%
+             purrr::map_df(.f=function(x) x$ct_des, .id = 'sim')%>%
+             filter(sur%in%c('mi'))%>%
+             mutate(minfo = b/(ubar + b),
+                    msinfo = b_subj/(u_subj + b_subj))%>%
+             dplyr::select(sim, minfo, msinfo)%>%
+             dplyr::mutate(set_n = sc)%>%
+             dplyr::left_join(setting, by = "set_n")%>%
+             dplyr::mutate(pc = pc, pt = pt, n_obs = n_obs, cor_xl = cor_xl)
+           
+         })
+
+saveRDS(minfo2, "sums/minfo_mdsu_obs3_smcar.rds")
+
 ################################
 # Patient data are MAR        #
 ################################
 
-ll <- seq(2,8,1)
+ll <- seq(1,12,1)
 
 do_check <- map_df(ll, 
                    .f = function(sc) {
@@ -131,7 +184,10 @@ x_check <- map_df(ll,
                     x1 <- readRDS(list.files("results/mar", paste0("mdsu_obs3_smar_sc", sc, ".rds"), full.names = T))
                     x2 <- x1%>%
                       purrr::map_df(.f=function(x) x$p_ch, .id = 'sim')%>%
-                      group_by(trt,r)%>%summarise_at(.vars = c('xmean', 'pcca', 'pfull'), .funs = 'mean')
+                      group_by(trt,r)%>%summarise_at(.vars = c('xmean', 'pcca', 'pfull'), .funs = 'mean')%>%
+                      mutate(set_n = sc)%>%
+                      left_join(setting, by = 'set_n')
+                    
                     
                   })
 
@@ -155,5 +211,24 @@ res_sum3 <-
          })
 
 saveRDS(res_sum3, "sums/sum_mdsu_obs3_smar.rds")
+
+minfo3 <-
+  map_df(ll, 
+         .f = function(sc) {
+           x1 <- readRDS(list.files("results/mar", paste0("mdsu_obs3_smar_sc", sc, ".rds"), full.names = T))
+           x2 <- x1%>%
+             purrr::map_df(.f=function(x) x$ct_des, .id = 'sim')%>%
+             filter(sur%in%c('mi'))%>%
+             mutate(minfo = b/(ubar + b),
+                    msinfo = b_subj/(u_subj + b_subj))%>%
+             dplyr::select(sim, minfo, msinfo)%>%
+             dplyr::mutate(set_n = sc)%>%
+             dplyr::left_join(setting, by = "set_n")%>%
+             dplyr::mutate(pc = pc, pt = pt, n_obs = n_obs, cor_xl = cor_xl)
+           
+         })
+
+saveRDS(minfo3, "sums/minfo_mdsu_obs3_smar.rds")
+
 
 
