@@ -24,7 +24,7 @@ xcov <- matrix(c(4^2, 4*0.05*cor_xl, 4*0.05*cor_xl, 0.05^2), 2, 2)
 num_m_md <- 20 
 
 x1 <- parallel::mclapply(X = 1:5000, 
-                         mc.cores = 20,
+                         mc.cores = 24,
                          FUN= function(x){
                            
 #population of physicians consists of 1000 doctors

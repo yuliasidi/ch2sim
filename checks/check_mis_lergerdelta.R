@@ -12,7 +12,8 @@ test_res <- function(dt, pt){
     dplyr::filter(sur %in% c('all', 'mi', 'obs'))%>%
     dplyr::group_by(sur)%>%
     dplyr::summarise(ni_desy = sum(ni_des, na.rm = T),
-                     n_sim = n())%>%
+                     n_sim = n(),
+                     n_pi = ni_desy/n_sim)%>%
     dplyr::mutate(pt = pt)  
 }
 

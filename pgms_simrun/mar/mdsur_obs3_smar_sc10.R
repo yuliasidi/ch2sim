@@ -31,7 +31,7 @@ x1 <- parallel::mclapply(X = 1:5000,
                          FUN= function(x){
                            
 #population of physicians consists of 1000 doctors
-set.seed(100*1 + x)
+set.seed(100*10 + x)
 dt_pop0 <- mvrnorm(1000, mu = c(15, 0.7), Sigma = xcov)
 
 dt_pop <- tibble::tibble(x = dt_pop0[,1],
@@ -86,7 +86,7 @@ mdsur_smax <- dt_obs%>%
   dplyr::mutate(sd_l = 0, n_l = 1)
 
 #generate trial data:
-set.seed(200*1 + x)
+set.seed(200*10 + x)
 dt0 <- bin2mi::dt_p2(n = n_obs, pc = pc, pt = pt, add_xcont = TRUE)
 
 

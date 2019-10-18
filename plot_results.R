@@ -73,3 +73,27 @@ print(xtable::xtable(minfo_tab_mcar, digits=c(0,3,1,0,4,4)), include.rownames=FA
 minfo_tab_mar <- tab_minfo(minfo_mar, subj_miss = T)
 print(xtable::xtable(minfo_tab_mar, digits=c(0,3,1,0,4,4)), include.rownames=FALSE)
 
+
+##################################################################################
+# Min/Max differences per method across different scenarios/types of missingness #
+##################################################################################
+
+allres <- 
+  bind_rows(mdsum%>%
+            mutate(miss = 'm2'),
+          mdrsum%>%
+            mutate(miss = 'm2_r'),
+          mdsum_mcar%>%
+            mutate(miss = 'm2_smcar'),
+          mdsum_mar%>%
+            mutate(miss = 'm2_smar'))%>%
+  mutate(ni_p = 100 * (ni_desy/n_sim))
+
+allres%>% 
+  dplyr::select(sur, set_n, ni_p, miss)%>%
+  tidyr::spread(key = 'sur', value = 'ni_p')%>%
+  dplyr::mutate(MI = all - mi, OBS = all - obs, MIN = all - `sing min`, MAX = all - `sing max`)%>%
+  dplyr::select(set_n, miss, MI, OBS, MIN, MAX)%>%
+  tidyr::gather(key = 'method', value = 'diff', -c(set_n, miss))%>%
+  dplyr::group_by(method)%>%
+  dplyr::summarise(min_diff = min(abs(diff)), max_diff = max(abs(diff)))
