@@ -3,7 +3,7 @@ library(purrr)
 
 setting <- readRDS("setting.rds")
 
-ll <- seq(1,12,1)
+ll <- seq(2,12,1)
 
 #check the mean number of observed MDs
 map_df(ll, 

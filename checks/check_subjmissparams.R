@@ -11,7 +11,7 @@ pt <- 0.825
 n_obs <- 250
 do_rate <- 0.2
 
-x1 <- parallel::mclapply(X = 1:1000, 
+x1 <- parallel::mclapply(X = 1:5000, 
                          mc.cores = 7,
                          FUN= function(i){
                            
@@ -20,7 +20,7 @@ x1 <- parallel::mclapply(X = 1:1000,
   
   
   #impose missingness in the subject level data based on x
-  dt0_miss <- dt_miss_pert(dt0, do_ratec = do_rate, do_ratet = do_rate, bxmc = -0.015, bxmt = 0.02)
+  dt0_miss <- dt_miss_pert(dt0, do_ratec = do_rate, do_ratet = do_rate, bxmc = -0.009, bxmt = 0.013)
   
   dt0_miss%>%
   group_by(trt)%>%

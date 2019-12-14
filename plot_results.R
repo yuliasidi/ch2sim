@@ -6,36 +6,37 @@ source("funs/plotd_ch2.R")
 source("funs/tab_sum.R")
 source("funs/tab_minfo.R")
 
+setting <- readRDS("setting.rds")
 
-mdsum <- readRDS("sums/sum_mdsu_obs3.rds")
-mdrsum <- readRDS("sums/sum_mdsu_obs3r.rds")
-mdsum_mcar <- readRDS("sums/sum_mdsu_obs3_smcar.rds")
-mdsum_mar <- readRDS("sums/sum_mdsu_obs3_smar.rds")
+mdsum <- readRDS("sums/sum_mdsu_obs3_cart.rds")
+mdrsum <- readRDS("sums/sum_mdsu_obs3r_cart.rds")
+mdsum_mcar <- readRDS("sums/sum_mdsu_obs3_smcar_cart.rds")
+mdsum_mar <- readRDS("sums/sum_mdsu_obs3_smar_cart.rds")
 
-minfo <- readRDS("sums/minfo_mdsu_obs3.rds")
-minfor <- readRDS("sums/minfo_mdsu_obs3r.rds")
-minfo_mcar <- readRDS("sums/minfo_mdsu_obs3_smcar.rds")
-minfo_mar <- readRDS("sums/minfo_mdsu_obs3_smar.rds")
+minfo <- readRDS("sums/minfo_mdsu_obs3_cart.rds")
+minfor <- readRDS("sums/minfo_mdsu_obs3r_cart.rds")
+minfo_mcar <- readRDS("sums/minfo_mdsu_obs3_smcar_cart.rds")
+minfo_mar <- readRDS("sums/minfo_mdsu_obs3_smar_cart.rds")
 
 
 ###############################
 ## Plots - Difference vs POP ##
 ###############################
 
-pdf("plots/plotd_mdsur_obs3.pdf")
+pdf("plots/plotd_mdsur_obs3_cart.pdf")
 plotd_ch2(mdsum)
 dev.off()
 
-pdf("plots/plotd_mdsur_obs3r.pdf")
+pdf("plots/plotd_mdsur_obs3r_cart.pdf")
 plotd_ch2(mdrsum)
 dev.off()
 
-pdf("plots/plotd_mdsur_obs3_mcar.pdf")
+pdf("plots/plotd_mdsur_obs3_mcar_cart.pdf")
 plotd_ch2(mdsum_mcar)
 dev.off()
 
 
-pdf("plots/plotd_mdsur_obs3_mar.pdf")
+pdf("plots/plotd_mdsur_obs3_mar_cart.pdf")
 plotd_ch2(mdsum_mar)
 dev.off()
 
@@ -73,6 +74,14 @@ print(xtable::xtable(minfo_tab_mcar, digits=c(0,3,1,0,4,4)), include.rownames=FA
 minfo_tab_mar <- tab_minfo(minfo_mar, subj_miss = T)
 print(xtable::xtable(minfo_tab_mar, digits=c(0,3,1,0,4,4)), include.rownames=FALSE)
 
+#combine mcar and mar
+minfo_tab_both <- minfo_tab_mcar%>%
+  dplyr::left_join(minfo_tab_mar%>%
+                     dplyr::rename(mminfo_mar = mminfo,
+                                   mmsinfo_mar = mmsinfo), by = c('pt', 'cor_xl', 'n_obs'))
+
+print(xtable::xtable(minfo_tab_both, digits=c(0,3,1,0,4,4,4,4)), include.rownames=FALSE)
+
 
 ##################################################################################
 # Min/Max differences per method across different scenarios/types of missingness #
@@ -97,3 +106,17 @@ allres%>%
   tidyr::gather(key = 'method', value = 'diff', -c(set_n, miss))%>%
   dplyr::group_by(method)%>%
   dplyr::summarise(min_diff = min(abs(diff)), max_diff = max(abs(diff)))
+
+allres%>% 
+  dplyr::select(sur, set_n, ni_p, miss)%>%
+  tidyr::spread(key = 'sur', value = 'ni_p')%>%
+  dplyr::mutate(MI = all - mi, OBS = all - obs, MIN = all - `sing min`, MAX = all - `sing max`)%>%
+  dplyr::filter(miss %in% c('m2', 'm2_r'))%>%
+  dplyr::summarise_at(.vars = c('MI','OBS', 'MAX', 'MIN'), .funs = c('min', 'max'))
+
+allres%>% 
+  dplyr::select(sur, set_n, ni_p, miss)%>%
+  tidyr::spread(key = 'sur', value = 'ni_p')%>%
+  dplyr::mutate(MI = all - mi, OBS = all - obs, MIN = all - `sing min`, MAX = all - `sing max`)%>%
+  dplyr::filter(miss %in% c('m2_smcar'))%>%
+  dplyr::summarise_at(.vars = c('MI','OBS', 'MAX', 'MIN'), .funs = c('min', 'max'))

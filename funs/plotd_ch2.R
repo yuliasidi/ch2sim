@@ -1,4 +1,4 @@
-plotd_ch2 <- function(dt){
+plotd_ch2 <- function(dt, cor_val = 0.4){
   
   pdat <- dt%>%
     dplyr::mutate(ni_p = 100 * (ni_desy/n_sim))%>%
@@ -8,7 +8,7 @@ plotd_ch2 <- function(dt){
     dplyr::select(set_n, MI, OBS, MIN, MAX)%>%
     tidyr::gather(key = 'method', value = 'diff', -set_n)%>%
     dplyr::left_join(setting, by = 'set_n')%>%
-    dplyr::filter(cor_xl == 0.4)%>%
+    dplyr::filter(cor_xl == cor_val)%>%
     tibble::as_tibble()%>%
     dplyr::mutate(n_obs = paste0('n=', n_obs))%>%
     dplyr::group_by(set_n)%>%
@@ -23,8 +23,8 @@ plotd_ch2 <- function(dt){
       aes(x=pt_nudge, y = diff, fill = method),
       data = pdat, stat = 'identity') + 
     #scale_y_continuous(labels = scales::percent) +
-    scale_x_continuous(breaks = unique(pdat$pt)) + 
-    labs(x = 'Probability of event in standard treatment group', y = 'Difference in % rejections vs POP',
+    scale_x_continuous(breaks = unique(pdat$pt), labels = scales::percent_format(accuracy = 0.1)) + 
+    labs(x = 'Event probability in new treatment group', y = 'Difference in % rejections vs OBJ',
          fill = 'Method') +
     facet_grid(. ~ n_obs) + 
     theme_bw(base_size = 15) + 
