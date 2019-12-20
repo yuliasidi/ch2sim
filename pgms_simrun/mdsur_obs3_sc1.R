@@ -102,7 +102,7 @@ dt_obs <- dt_all%>%
   dplyr::mutate(lambda = ifelse(r==0, lambda, NA))%>%
   dplyr::select(-x_20)
 
-mdsur_mi <- m2_mi(dt_obs, num_m = num_m_md, mi_method = 'cart')%>%
+mdsur_mi <- m2_mi(dt_obs, num_m = num_m_md, use_pckg = 'norm')%>%
   dplyr::rename(mean_l = qbar)%>%
   dplyr::mutate(sd_l = sqrt(t), se_l = sd_l)
 

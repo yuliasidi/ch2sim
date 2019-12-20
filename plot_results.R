@@ -110,9 +110,32 @@ allres%>%
 allres%>% 
   dplyr::select(sur, set_n, ni_p, miss)%>%
   tidyr::spread(key = 'sur', value = 'ni_p')%>%
-  dplyr::mutate(MI = all - mi, OBS = all - obs, MIN = all - `sing min`, MAX = all - `sing max`)%>%
+  dplyr::mutate(MI = abs(all - mi), OBS = abs(all - obs), MIN = abs(all - `sing min`), MAX = abs(all - `sing max`))%>%
   dplyr::filter(miss %in% c('m2', 'm2_r'))%>%
   dplyr::summarise_at(.vars = c('MI','OBS', 'MAX', 'MIN'), .funs = c('min', 'max'))
+
+#take a look at this data
+tmp <- allres%>% 
+  dplyr::select(sur, set_n, ni_p, miss, cor_xl)%>%
+  dplyr::filter(cor_xl ==0.7)%>%
+  tidyr::spread(key = 'sur', value = 'ni_p')%>%
+  dplyr::mutate(MI = abs(all - mi), OBS = abs(all - obs), MIN = abs(all - `sing min`), MAX = abs(all - `sing max`))%>% 
+  filter(miss %in% c('m2', 'm2_r'))
+
+tmp1 <- allres%>% 
+  dplyr::select(sur, set_n, ni_p, miss, cor_xl)%>%
+  dplyr::filter(cor_xl ==0.7)%>%
+  tidyr::spread(key = 'sur', value = 'ni_p')%>%
+  dplyr::mutate(MI = abs(all - mi), OBS = abs(all - obs), MIN = abs(all - `sing min`), MAX = abs(all - `sing max`))%>% 
+  filter(miss %in% c('m2_smcar'))
+
+tmp2 <- allres%>% 
+  dplyr::select(sur, set_n, ni_p, miss, cor_xl)%>%
+  dplyr::filter(cor_xl ==0.4)%>%
+  tidyr::spread(key = 'sur', value = 'ni_p')%>%
+  dplyr::mutate(MI = abs(all - mi), OBS = abs(all - obs), MIN = abs(all - `sing min`), MAX = abs(all - `sing max`))%>% 
+  filter(miss %in% c('m2_smar'))
+
 
 allres%>% 
   dplyr::select(sur, set_n, ni_p, miss)%>%
