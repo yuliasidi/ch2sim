@@ -29,6 +29,35 @@ purrr::pwalk(.l = setting.l,
                  sep='\n')
              })
 
+#################################################
+## Subject level data is fully opbserved -NORM ##
+#################################################
+
+setting <- readRDS("setting.rds")
+
+setting.l <- as.list(setting%>%filter(set_n!=1))
+
+purrr::pwalk(.l = setting.l,
+             .f = function(cor_xl, pc, pt, n_obs, set_n){
+               cat(
+                 whisker::whisker.render(
+                   readLines('tmpls/mdsur_obs3_pnorm.tmpl'),
+                   data = list(
+                     cor_xl = cor_xl,
+                     pc = pc,
+                     pt = pt,
+                     n_obs = n_obs,
+                     set_n = set_n)
+                 ),
+                 file = file.path('pgms_simrun',
+                                  sprintf("mdsur_obs3_sc%s_pnorm.R",
+                                          set_n)
+                 ),
+                 sep='\n')
+             })
+
+
+
 
 ############################################################################
 ## Subject level data is fully opbserved random small subset of MDs - CART##

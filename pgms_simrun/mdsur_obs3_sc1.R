@@ -49,8 +49,8 @@ dt_sample <- dt_pop%>%
 #observe only k physicians
 dt_all <- 
   dt_sample%>%
-  dplyr::mutate(pmiss = ifelse(x_20 == 1, 0.95, 0.99))%>%
-  #dplyr::mutate(pmiss = ifelse(x_20 == 1, 0.93, 0.97))%>%
+  #dplyr::mutate(pmiss = ifelse(x_20 == 1, 0.95, 0.99))%>%
+  dplyr::mutate(pmiss = ifelse(x_20 == 1, 0.93, 0.97))%>%
   #dplyr::mutate(pmiss = ifelse(x_20 == 1, 0.85, 0.95))%>%
   #dplyr::mutate(pmiss = ifelse(x_20 == 1, 0.4, 0.8))%>%
   split(.$pmiss)%>%
@@ -71,8 +71,8 @@ while(length(dt_all$r[dt_all$r==0])<4){
 
   dt_all <- 
     dt_sample%>%
-    dplyr::mutate(pmiss = ifelse(x_20 == 1, 0.95, 0.99))%>%
-    #dplyr::mutate(pmiss = ifelse(x_20 == 1, 0.93, 0.97))%>%
+    #dplyr::mutate(pmiss = ifelse(x_20 == 1, 0.95, 0.99))%>%
+    dplyr::mutate(pmiss = ifelse(x_20 == 1, 0.93, 0.97))%>%
     #dplyr::mutate(pmiss = ifelse(x_20 == 1, 0.85, 0.95))%>%
     #dplyr::mutate(pmiss = ifelse(x_20 == 1, 0.4, 0.8))%>%
     split(.$pmiss)%>%
@@ -102,7 +102,9 @@ dt_obs <- dt_all%>%
   dplyr::mutate(lambda = ifelse(r==0, lambda, NA))%>%
   dplyr::select(-x_20)
 
-mdsur_mi <- m2_mi(dt_obs, num_m = num_m_md, use_pckg = 'norm')%>%
+mi_out <- m2_mi(dt_obs, num_m = num_m_md, i = i, use_pckg = 'norm', n_iter = 100000)
+
+mdsur_mi <- mi_out$out%>%
   dplyr::rename(mean_l = qbar)%>%
   dplyr::mutate(sd_l = sqrt(t), se_l = sd_l)
 
