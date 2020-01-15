@@ -5,9 +5,9 @@ pt <- setting$pt[setting$set_n==1]
 n_obs <- setting$n_obs[setting$set_n==1]
 cor_xl <- setting$cor_xl[setting$set_n==1]
 
-x1_10k <- readRDS("results/mdsu_obs3_sc1_10k.rds")
+x1_10k <- readRDS("results/mdsu_obs3_sc1_cart_min2_10k.rds")
 
-x1 <- readRDS("results/mdsu_obs3_sc1.rds")
+x1 <- readRDS("results/mdsu_obs3_sc1_cart_min2.rds")
 
 x2 <- x1%>%
   purrr::map_df(.f=function(x) x$ct_des, .id = 'sim')
@@ -34,4 +34,4 @@ check_10k <- check_10k%>%
   dplyr::select(n_sim, sur, ni_desp)%>%
   tidyr::spread(key = 'n_sim', value = 'ni_desp')
 
-saveRDS(check_10k, "checks/ch_10k_vs_5k.rds")
+saveRDS(check_10k, "checks/ch_outs/ch_10k_vs_5k.rds")

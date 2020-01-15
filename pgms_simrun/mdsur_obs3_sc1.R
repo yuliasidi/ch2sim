@@ -18,8 +18,6 @@ mu_lambda <- 0.7
 sd_x <- 7
 sd_lambda <- 0.12
 
-#rate of clinical experts opinios we observe
-obs_rate <- 0.05
 #parameters tbu in the clinical experts opinions model (to calculate probability to be non/observed) 
 #b1 <- - 0.08
 xcov <- matrix(c(sd_x^2, sd_x*sd_lambda*cor_xl, sd_x*sd_lambda*cor_xl, sd_lambda^2), 2, 2)
@@ -49,8 +47,8 @@ dt_sample <- dt_pop%>%
 #observe only k physicians
 dt_all <- 
   dt_sample%>%
-  #dplyr::mutate(pmiss = ifelse(x_20 == 1, 0.95, 0.99))%>%
-  dplyr::mutate(pmiss = ifelse(x_20 == 1, 0.93, 0.97))%>%
+  dplyr::mutate(pmiss = ifelse(x_20 == 1, 0.95, 0.99))%>%
+  #dplyr::mutate(pmiss = ifelse(x_20 == 1, 0.93, 0.97))%>%
   #dplyr::mutate(pmiss = ifelse(x_20 == 1, 0.85, 0.95))%>%
   #dplyr::mutate(pmiss = ifelse(x_20 == 1, 0.4, 0.8))%>%
   split(.$pmiss)%>%
@@ -71,8 +69,8 @@ while(length(dt_all$r[dt_all$r==0])<4){
 
   dt_all <- 
     dt_sample%>%
-    #dplyr::mutate(pmiss = ifelse(x_20 == 1, 0.95, 0.99))%>%
-    dplyr::mutate(pmiss = ifelse(x_20 == 1, 0.93, 0.97))%>%
+    dplyr::mutate(pmiss = ifelse(x_20 == 1, 0.95, 0.99))%>%
+    #dplyr::mutate(pmiss = ifelse(x_20 == 1, 0.93, 0.97))%>%
     #dplyr::mutate(pmiss = ifelse(x_20 == 1, 0.85, 0.95))%>%
     #dplyr::mutate(pmiss = ifelse(x_20 == 1, 0.4, 0.8))%>%
     split(.$pmiss)%>%

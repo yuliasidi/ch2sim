@@ -1,43 +1,3 @@
-library(dplyr, warn.conflicts = F, quietly = T)
-library(ggplot2, warn.conflicts = F, quietly = T)
-
-
-x1_cart <- readRDS("results/mdsu_obs3_sc1_cart.rds")
-x1_norm <- readRDS("results/mdsu_obs3_sc1_norm.rds")
-
-
-x2_cart <- 
-  x1_cart%>%
-  purrr::map_df(.f=function(x) x$ct_des, .id = 'sim')
-
-x2_norm <- 
-  x1_norm%>%
-  purrr::map_df(.f=function(x) x$ct_des, .id = 'sim')
-
-x3_cart <- 
-  x2_cart%>%
-  dplyr::filter(sur == 'mi')%>%
-  dplyr::select(sim, mean_l, ubar, b, t, v)
-
-x3_norm <- 
-  x2_norm%>%
-  dplyr::filter(sur == 'mi')%>%
-  dplyr::select(sim, mean_l, ubar, b, t, v)
-
-x_both <- dplyr::bind_rows(x3_cart%>%
-                             dplyr::mutate(mi_method = 'cart'),
-                           x3_norm%>%
-                             dplyr::mutate(mi_method = 'norm'))
-x_both1 <- x_both%>%
-  dplyr::select(-c(t, mean_l))%>%
-  tidyr::gather(key = 'var_term', value = 'val', -c(sim, mi_method))
-
-x_both1%>%
-  dplyr::filter(var_term!='v')%>%
-  ggplot(aes(x = sim, y = val)) +
-  geom_point(aes(color = var_term)) +
-  facet_wrap(~ mi_method, scales = 'free')
-
 library(purrr, warn.conflicts = F, quietly = T)
 library(MASS, warn.conflicts = F, quietly = T)
 library(bin2mi)
@@ -51,13 +11,12 @@ pt <- 0.825
 m1 <- 0.23
 n_obs <- 250
 
-mu_x <- 15
+mu_x <- 20
 mu_lambda <- 0.7
-sd_x <- 4
-sd_lambda <- 0.05
+sd_x <- 7
+sd_lambda <- 0.12
 
-
-
+#parameters tbu in the clinical experts opinions model (to calculate probability to be non/observed) 
 xcov <- matrix(c(sd_x^2, sd_x*sd_lambda*cor_xl, sd_x*sd_lambda*cor_xl, sd_lambda^2), 2, 2)
 
 #number of imputations for the MDs survey

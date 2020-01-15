@@ -7,8 +7,8 @@ pt <- setting$pt[setting$set_n==1]
 n_obs <- setting$n_obs[setting$set_n==1]
 cor_xl <- setting$cor_xl[setting$set_n==1]
 
-x1_m50 <- readRDS("results/mdsu_obs3_sc1_cart_m50.rds")
-x1_m20 <- readRDS("results/mdsu_obs3_sc1_cart.rds")
+x1_m50 <- readRDS("results/mdsu_obs3_sc1_cart_min2_m50.rds")
+x1_m20 <- readRDS("results/mdsu_obs3_sc1_cart_min2.rds")
 
 x2_m20 <- x1_m20%>%
   purrr::map_df(.f=function(x) x$ct_des, .id = 'sim')
