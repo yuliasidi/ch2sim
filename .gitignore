@@ -1,0 +1,9 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+old_pgms/
+results/
+*.Rproj
+*.rds
+*.slurm*

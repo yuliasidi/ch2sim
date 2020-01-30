@@ -130,12 +130,48 @@ allres%>%
   dplyr::summarise_at(.vars = c('MI','OBS', 'MAX', 'MIN'), .funs = c('min', 'max'))
 
 #take a look at this data
-tmp <- allres%>% 
+dev_04 <- allres%>% 
+  dplyr::select(sur, set_n, ni_p, miss, cor_xl)%>%
+  dplyr::filter(cor_xl ==0.4)%>%
+  tidyr::spread(key = 'sur', value = 'ni_p')%>%
+  dplyr::mutate(MI = abs(all - mi), OBS = abs(all - obs), MIN = abs(all - `sing min`), MAX = abs(all - `sing max`))%>% 
+  filter(miss %in% c('m2', 'm2_r'))
+
+dev_07 <- allres%>% 
   dplyr::select(sur, set_n, ni_p, miss, cor_xl)%>%
   dplyr::filter(cor_xl ==0.7)%>%
   tidyr::spread(key = 'sur', value = 'ni_p')%>%
   dplyr::mutate(MI = abs(all - mi), OBS = abs(all - obs), MIN = abs(all - `sing min`), MAX = abs(all - `sing max`))%>% 
   filter(miss %in% c('m2', 'm2_r'))
+
+dev_04_mcar <- allres%>% 
+  dplyr::select(sur, set_n, ni_p, miss, cor_xl)%>%
+  dplyr::filter(cor_xl ==0.4)%>%
+  tidyr::spread(key = 'sur', value = 'ni_p')%>%
+  dplyr::mutate(MI = abs(all - mi), OBS = abs(all - obs), MIN = abs(all - `sing min`), MAX = abs(all - `sing max`))%>% 
+  filter(miss %in% c('m2_smcar'))
+
+dev_07_mcar <- allres%>% 
+  dplyr::select(sur, set_n, ni_p, miss, cor_xl)%>%
+  dplyr::filter(cor_xl ==0.7)%>%
+  tidyr::spread(key = 'sur', value = 'ni_p')%>%
+  dplyr::mutate(MI = abs(all - mi), OBS = abs(all - obs), MIN = abs(all - `sing min`), MAX = abs(all - `sing max`))%>% 
+  filter(miss %in% c('m2_smcar'))
+
+dev_04_mar <- allres%>% 
+  dplyr::select(sur, set_n, ni_p, miss, cor_xl)%>%
+  dplyr::filter(cor_xl ==0.4)%>%
+  tidyr::spread(key = 'sur', value = 'ni_p')%>%
+  dplyr::mutate(MI = abs(all - mi), OBS = abs(all - obs), MIN = abs(all - `sing min`), MAX = abs(all - `sing max`))%>% 
+  filter(miss %in% c('m2_smar'))
+
+dev_07_mar <- allres%>% 
+  dplyr::select(sur, set_n, ni_p, miss, cor_xl)%>%
+  dplyr::filter(cor_xl ==0.7)%>%
+  tidyr::spread(key = 'sur', value = 'ni_p')%>%
+  dplyr::mutate(MI = abs(all - mi), OBS = abs(all - obs), MIN = abs(all - `sing min`), MAX = abs(all - `sing max`))%>% 
+  filter(miss %in% c('m2_smar'))
+
 
 tmp1 <- allres%>% 
   dplyr::select(sur, set_n, ni_p, miss, cor_xl)%>%

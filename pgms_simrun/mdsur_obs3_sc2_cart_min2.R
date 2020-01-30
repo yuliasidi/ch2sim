@@ -24,7 +24,7 @@ xcov <- matrix(c(sd_x^2, sd_x*sd_lambda*cor_xl, sd_x*sd_lambda*cor_xl, sd_lambda
 num_m_md <- 20 
 
 x1 <- parallel::mclapply(X = 1:5000, 
-                         mc.cores = 20,
+                         mc.cores = 24,
                          FUN= function(i){
                            
 #population of physicians consists of 1000 doctors
@@ -100,7 +100,7 @@ dt_pop0 <- mvrnorm(1000, mu = c(mu_x, mu_lambda), Sigma = xcov)
      dplyr::mutate(sd_l = 0, n_l = 1)
 
    #generate trial data:
-   set.seed(200*1 + i)
+   set.seed(200*2 + i)
    dt0 <- bin2mi::dt_p2(n = n_obs, pc = pc, pt = pt)
 
    #calculate ci and derive decision based on the full/obs/mi/sing cohort of MDs

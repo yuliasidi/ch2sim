@@ -7,9 +7,9 @@ library(m2imp)
 
 alpha <- 0.025
 power <- 0.85
-cor_xl <- 0.7
+cor_xl <- 0.4
 pc <- 0.8
-pt <- 0.8
+pt <- 0.825
 m1 <- 0.23
 n_obs <- 250
 
@@ -28,7 +28,7 @@ x1 <- parallel::mclapply(X = 1:5000,
                          FUN= function(i){
                            
 #population of physicians consists of 1000 doctors
-set.seed(100*4 + i)
+set.seed(100*1 + i)
 dt_pop0 <- mvrnorm(1000, mu = c(mu_x, mu_lambda), Sigma = xcov)
 
    dt_pop <- tibble::tibble(x = dt_pop0[,1],
@@ -100,9 +100,9 @@ dt_pop0 <- mvrnorm(1000, mu = c(mu_x, mu_lambda), Sigma = xcov)
      dplyr::mutate(sd_l = 0, n_l = 1)
 
    #generate trial data:
-   set.seed(200*4 + i)
-   dt0 <- bin2mi::dt_p2(n = n_obs, pc = pc, pt = pt)
-
+   set.seed(200*1 + i)
+   dt0 <- bin2mi::dt_p2(n = n_obs, pc = pc, pt = pt, add_xcont = TRUE)
+   
    #calculate ci and derive decision based on the full/obs/mi/sing cohort of MDs
    mdall_des  <- ci_sur(mdsur_all, dt0, type = 'all')
    mdobs_des  <- ci_sur(mdsur_obs, dt0, type = 'obs')
@@ -120,5 +120,5 @@ dt_pop0 <- mvrnorm(1000, mu = c(mu_x, mu_lambda), Sigma = xcov)
                         
 })
 
-saveRDS(x1, "results/mdsu_obs3_sc4_cart_min2.rds")  
+saveRDS(x1, "results/mdsu_obs3_sc1_cart_min2_tmp.rds")  
 

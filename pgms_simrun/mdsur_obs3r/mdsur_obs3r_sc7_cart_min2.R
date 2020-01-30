@@ -100,7 +100,7 @@ dt_pop0 <- mvrnorm(1000, mu = c(mu_x, mu_lambda), Sigma = xcov)
      dplyr::mutate(sd_l = 0, n_l = 1)
 
    #generate trial data:
-   set.seed(200*1 + i)
+   set.seed(200*7 + i)
    dt0 <- bin2mi::dt_p2(n = n_obs, pc = pc, pt = pt)
 
    #calculate ci and derive decision based on the full/obs/mi/sing cohort of MDs
