@@ -71,6 +71,10 @@ print(xtable::xtable(mdrsum_tab, digits=c(0,3,0,1,1,1,1,1)), include.rownames=FA
 mdsum_mcar_tab <- tab_sum(mdsum_mcar)
 print(xtable::xtable(mdsum_mcar_tab, digits=c(0,3,0,1,1,1,1,1)), include.rownames=FALSE)
 
+mdsum_mcar_tab07 <- tab_sum(mdsum_mcar, rho = 0.7)
+print(xtable::xtable(mdsum_mcar_tab07, digits=c(0,3,0,1,1,1,1,1)), include.rownames=FALSE)
+
+
 mdsum_mar_tab <- tab_sum(mdsum_mar)
 print(xtable::xtable(mdsum_mar_tab, digits=c(0,3,0,1,1,1,1,1)), include.rownames=FALSE)
 
