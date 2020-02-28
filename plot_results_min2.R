@@ -101,6 +101,9 @@ minfo_tab_both <- minfo_tab_mcar%>%
 
 print(xtable::xtable(minfo_tab_both, digits=c(0,3,1,0,4,4,4,4)), include.rownames=FALSE)
 
+mm <- minfo_tab_both%>%
+  dplyr::mutate(mcarall = mminfo + mmsinfo,
+                marall = mminfo_mar + mmsinfo_mar)
 
 ##################################################################################
 # Min/Max differences per method across different scenarios/types of missingness #

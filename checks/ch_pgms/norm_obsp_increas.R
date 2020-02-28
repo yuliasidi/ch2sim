@@ -1,3 +1,5 @@
+library(dplyr)
+
 x1 <- readRDS('checks/ch_outs/obs10_cart.rds')
 
 norm10 <- readRDS('checks/ch_outs/obs10_norm.rds')
@@ -10,7 +12,7 @@ norm80 <- readRDS('checks/ch_outs/obs80_norm.rds')
 x1%>%
   purrr::map_df(.f = function(x) x$md)%>%
   group_by(sur)%>%
-  summarise_at(c('mean_l', 'se_l'), 'mean')
+  summarise_at(c('mean_l', 'se_l', 'b', 'ubar'), 'mean')
 
 norm10%>%
   purrr::map_df(.f = function(x) x$md)%>%
