@@ -7,3 +7,5 @@ results/
 *.Rproj
 *.rds
 *.slurm*
+*.png
+*.csv

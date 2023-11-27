@@ -23,60 +23,104 @@ minfo_mar <- readRDS("sums/minfo_mdsu_obs3_smar_cart_min2.rds")
 ## Plots - Difference vs POP ##
 ###############################
 
-pdf("plots/plotd_mdsur_obs3_cart_min2.pdf")
+pdf("plots/plotd_mdsur_obs3_cart_min2_BS.pdf")
 plotd_ch2(mdsum)
 dev.off()
 
-pdf("plots/plotd_mdsur_obs3_cart_min2_cor7.pdf")
+pdf("plots/plotd_mdsur_obs3_cart_min2_cor7_BS.pdf")
 plotd_ch2(mdsum, cor_val = 0.7)
 dev.off()
 
-pdf("plots/plotd_mdsur_obs3r_cart_min2.pdf")
+pdf("plots/plotd_mdsur_obs3r_cart_min2_BS.pdf")
 plotd_ch2(mdrsum)
 dev.off()
 
-pdf("plots/plotd_mdsur_obs3r_cart_min2_cor7.pdf")
+pdf("plots/plotd_mdsur_obs3r_cart_min2_cor7_BS.pdf")
 plotd_ch2(mdrsum, cor_val = 0.7)
 dev.off()
 
-pdf("plots/plotd_mdsur_obs3_mcar_cart_min2.pdf")
+pdf("plots/plotd_mdsur_obs3_mcar_cart_min2_BS.pdf")
 plotd_ch2(mdsum_mcar)
 dev.off()
 
-pdf("plots/plotd_mdsur_obs3_mcar_cart_min2_cor7.pdf")
+pdf("plots/plotd_mdsur_obs3_mcar_cart_min2_cor7_BS.pdf")
 plotd_ch2(mdsum_mcar, cor_val = 0.7)
 dev.off()
 
 
-pdf("plots/plotd_mdsur_obs3_mar_cart_min2.pdf")
+pdf("plots/plotd_mdsur_obs3_mar_cart_min2_BS.pdf")
 plotd_ch2(mdsum_mar)
 dev.off()
 
-pdf("plots/plotd_mdsur_obs3_mar_cart_min2_cor7.pdf")
+pdf("plots/plotd_mdsur_obs3_mar_cart_min2_cor7_BS.pdf")
 plotd_ch2(mdsum_mar, cor_val = 0.7)
 dev.off()
+
+# pngs
+
+png("plots/plotd_mdsur_obs3_cart_min2_BS.png")
+plotd_ch2(mdsum)
+dev.off()
+
+png("plots/plotd_mdsur_obs3_cart_min2_cor7_BS.png")
+plotd_ch2(mdsum, cor_val = 0.7)
+dev.off()
+
+png("plots/plotd_mdsur_obs3r_cart_min2_BS.png")
+plotd_ch2(mdrsum)
+dev.off()
+
+png("plots/plotd_mdsur_obs3r_cart_min2_cor7_BS.png")
+plotd_ch2(mdrsum, cor_val = 0.7)
+dev.off()
+
+png("plots/plotd_mdsur_obs3_mcar_cart_min2_BS.png")
+plotd_ch2(mdsum_mcar)
+dev.off()
+
+png("plots/plotd_mdsur_obs3_mcar_cart_min2_cor7_BS.png")
+plotd_ch2(mdsum_mcar, cor_val = 0.7)
+dev.off()
+
+
+png("plots/plotd_mdsur_obs3_mar_cart_min2_BS.png")
+plotd_ch2(mdsum_mar)
+dev.off()
+
+png("plots/plotd_mdsur_obs3_mar_cart_min2_cor7_BS.png")
+plotd_ch2(mdsum_mar, cor_val = 0.7)
+dev.off()
+
+p1 <- plotd_ch2(mdsum)
+p2 <- plotd_ch2(mdrsum)
+p3 <- plotd_ch2(mdsum_mcar)
+p4 <- plotd_ch2(mdsum_mar)
+
+cowplot::plot_grid(p1, p2, p3, p4, labels = c("A)", "B)", "C)", "D)"))
+ggsave("plots/grid_plotd_mdsur_obs3_cart_min2_BS.png", device = "png",
+       width = 3600, height = 3200, units = "px")
 
 #####################################
 # Tables with results- % Rejections #
 #####################################
 
 mdsum_tab <- tab_sum(mdsum)
-print(xtable::xtable(mdsum_tab, digits=c(0,3,0,1,1,1,1,1)), include.rownames=FALSE)
+print(xtable::xtable(mdsum_tab, digits=c(0,3,0,1,1,1,1,1,1)), include.rownames=FALSE)
 
 
 mdrsum_tab <- tab_sum(mdrsum)
-print(xtable::xtable(mdrsum_tab, digits=c(0,3,0,1,1,1,1,1)), include.rownames=FALSE)
+print(xtable::xtable(mdrsum_tab, digits=c(0,3,0,1,1,1,1,1,1)), include.rownames=FALSE)
 
 
 mdsum_mcar_tab <- tab_sum(mdsum_mcar)
-print(xtable::xtable(mdsum_mcar_tab, digits=c(0,3,0,1,1,1,1,1)), include.rownames=FALSE)
+print(xtable::xtable(mdsum_mcar_tab, digits=c(0,3,0,1,1,1,1,1,1)), include.rownames=FALSE)
 
 mdsum_mcar_tab07 <- tab_sum(mdsum_mcar, rho = 0.7)
-print(xtable::xtable(mdsum_mcar_tab07, digits=c(0,3,0,1,1,1,1,1)), include.rownames=FALSE)
+print(xtable::xtable(mdsum_mcar_tab07, digits=c(0,3,0,1,1,1,1,1,1)), include.rownames=FALSE)
 
 
 mdsum_mar_tab <- tab_sum(mdsum_mar)
-print(xtable::xtable(mdsum_mar_tab, digits=c(0,3,0,1,1,1,1,1)), include.rownames=FALSE)
+print(xtable::xtable(mdsum_mar_tab, digits=c(0,3,0,1,1,1,1,1,1)), include.rownames=FALSE)
 
 #####################################
 # Tables with results- Missing Info #
@@ -109,7 +153,7 @@ mm <- minfo_tab_both%>%
 # Min/Max differences per method across different scenarios/types of missingness #
 ##################################################################################
 
-allres <- 
+allres <-
   bind_rows(mdsum%>%
             mutate(miss = 'm2'),
           mdrsum%>%
@@ -120,7 +164,7 @@ allres <-
             mutate(miss = 'm2_smar'))%>%
   mutate(ni_p = 100 * (ni_desy/n_sim))
 
-allres%>% 
+allres%>%
   dplyr::select(sur, set_n, ni_p, miss)%>%
   tidyr::spread(key = 'sur', value = 'ni_p')%>%
   dplyr::mutate(MI = all - mi, OBS = all - obs, MIN = all - `sing min`, MAX = all - `sing max`)%>%
@@ -129,7 +173,7 @@ allres%>%
   dplyr::group_by(method)%>%
   dplyr::summarise(min_diff = min(abs(diff)), max_diff = max(abs(diff)))
 
-allres%>% 
+allres%>%
   dplyr::select(sur, set_n, ni_p, miss)%>%
   tidyr::spread(key = 'sur', value = 'ni_p')%>%
   dplyr::mutate(MI = abs(all - mi), OBS = abs(all - obs), MIN = abs(all - `sing min`), MAX = abs(all - `sing max`))%>%
@@ -137,65 +181,65 @@ allres%>%
   dplyr::summarise_at(.vars = c('MI','OBS', 'MAX', 'MIN'), .funs = c('min', 'max'))
 
 #take a look at this data
-dev_04 <- allres%>% 
+dev_04 <- allres%>%
   dplyr::select(sur, set_n, ni_p, miss, cor_xl)%>%
   dplyr::filter(cor_xl ==0.4)%>%
   tidyr::spread(key = 'sur', value = 'ni_p')%>%
-  dplyr::mutate(MI = abs(all - mi), OBS = abs(all - obs), MIN = abs(all - `sing min`), MAX = abs(all - `sing max`))%>% 
+  dplyr::mutate(MI = abs(all - mi), OBS = abs(all - obs), MIN = abs(all - `sing min`), MAX = abs(all - `sing max`))%>%
   filter(miss %in% c('m2', 'm2_r'))
 
-dev_07 <- allres%>% 
+dev_07 <- allres%>%
   dplyr::select(sur, set_n, ni_p, miss, cor_xl)%>%
   dplyr::filter(cor_xl ==0.7)%>%
   tidyr::spread(key = 'sur', value = 'ni_p')%>%
-  dplyr::mutate(MI = abs(all - mi), OBS = abs(all - obs), MIN = abs(all - `sing min`), MAX = abs(all - `sing max`))%>% 
+  dplyr::mutate(MI = abs(all - mi), OBS = abs(all - obs), MIN = abs(all - `sing min`), MAX = abs(all - `sing max`))%>%
   filter(miss %in% c('m2', 'm2_r'))
 
-dev_04_mcar <- allres%>% 
+dev_04_mcar <- allres%>%
   dplyr::select(sur, set_n, ni_p, miss, cor_xl)%>%
   dplyr::filter(cor_xl ==0.4)%>%
   tidyr::spread(key = 'sur', value = 'ni_p')%>%
-  dplyr::mutate(MI = abs(all - mi), OBS = abs(all - obs), MIN = abs(all - `sing min`), MAX = abs(all - `sing max`))%>% 
+  dplyr::mutate(MI = abs(all - mi), OBS = abs(all - obs), MIN = abs(all - `sing min`), MAX = abs(all - `sing max`))%>%
   filter(miss %in% c('m2_smcar'))
 
-dev_07_mcar <- allres%>% 
+dev_07_mcar <- allres%>%
   dplyr::select(sur, set_n, ni_p, miss, cor_xl)%>%
   dplyr::filter(cor_xl ==0.7)%>%
   tidyr::spread(key = 'sur', value = 'ni_p')%>%
-  dplyr::mutate(MI = abs(all - mi), OBS = abs(all - obs), MIN = abs(all - `sing min`), MAX = abs(all - `sing max`))%>% 
+  dplyr::mutate(MI = abs(all - mi), OBS = abs(all - obs), MIN = abs(all - `sing min`), MAX = abs(all - `sing max`))%>%
   filter(miss %in% c('m2_smcar'))
 
-dev_04_mar <- allres%>% 
+dev_04_mar <- allres%>%
   dplyr::select(sur, set_n, ni_p, miss, cor_xl)%>%
   dplyr::filter(cor_xl ==0.4)%>%
   tidyr::spread(key = 'sur', value = 'ni_p')%>%
-  dplyr::mutate(MI = abs(all - mi), OBS = abs(all - obs), MIN = abs(all - `sing min`), MAX = abs(all - `sing max`))%>% 
+  dplyr::mutate(MI = abs(all - mi), OBS = abs(all - obs), MIN = abs(all - `sing min`), MAX = abs(all - `sing max`))%>%
   filter(miss %in% c('m2_smar'))
 
-dev_07_mar <- allres%>% 
+dev_07_mar <- allres%>%
   dplyr::select(sur, set_n, ni_p, miss, cor_xl)%>%
   dplyr::filter(cor_xl ==0.7)%>%
   tidyr::spread(key = 'sur', value = 'ni_p')%>%
-  dplyr::mutate(MI = abs(all - mi), OBS = abs(all - obs), MIN = abs(all - `sing min`), MAX = abs(all - `sing max`))%>% 
+  dplyr::mutate(MI = abs(all - mi), OBS = abs(all - obs), MIN = abs(all - `sing min`), MAX = abs(all - `sing max`))%>%
   filter(miss %in% c('m2_smar'))
 
 
-tmp1 <- allres%>% 
+tmp1 <- allres%>%
   dplyr::select(sur, set_n, ni_p, miss, cor_xl)%>%
   dplyr::filter(cor_xl ==0.7)%>%
   tidyr::spread(key = 'sur', value = 'ni_p')%>%
-  dplyr::mutate(MI = abs(all - mi), OBS = abs(all - obs), MIN = abs(all - `sing min`), MAX = abs(all - `sing max`))%>% 
+  dplyr::mutate(MI = abs(all - mi), OBS = abs(all - obs), MIN = abs(all - `sing min`), MAX = abs(all - `sing max`))%>%
   filter(miss %in% c('m2_smcar'))
 
-tmp2 <- allres%>% 
+tmp2 <- allres%>%
   dplyr::select(sur, set_n, ni_p, miss, cor_xl)%>%
   dplyr::filter(cor_xl ==0.4)%>%
   tidyr::spread(key = 'sur', value = 'ni_p')%>%
-  dplyr::mutate(MI = abs(all - mi), OBS = abs(all - obs), MIN = abs(all - `sing min`), MAX = abs(all - `sing max`))%>% 
+  dplyr::mutate(MI = abs(all - mi), OBS = abs(all - obs), MIN = abs(all - `sing min`), MAX = abs(all - `sing max`))%>%
   filter(miss %in% c('m2_smar'))
 
 
-allres%>% 
+allres%>%
   dplyr::select(sur, set_n, ni_p, miss)%>%
   tidyr::spread(key = 'sur', value = 'ni_p')%>%
   dplyr::mutate(MI = all - mi, OBS = all - obs, MIN = all - `sing min`, MAX = all - `sing max`)%>%

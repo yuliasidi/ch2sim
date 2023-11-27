@@ -8,61 +8,15 @@ setting <- readRDS("setting.rds")
 # All patient data is observed #
 ################################
 
-ll <- seq(1,12,1)
+ll <- seq(2,12,1)
 
-res_sum <-
-  map_df(ll, 
-         .f = function(sc) {
-           x1 <- readRDS(list.files("results", paste0("mdsu_obs3_sc", sc, "_cart_min2.rds"), full.names = T))
-           x2 <- x1%>%
-             purrr::map_df(.f=function(x) x$ct_des, .id = 'sim')
-           
-           x2%>%
-             dplyr::group_by(sur)%>%
-             dplyr::summarise(ni_desy = sum(ni_des, na.rm = T),
-                              n_sim = n(),
-                              md_n = mean(n_l),
-                              md_m2 = mean(mean_l),
-                              md_se = mean(se_l))%>%
-             dplyr::mutate(set_n = sc)%>%
-             dplyr::left_join(setting, by = "set_n")%>%
-             dplyr::mutate(pc = pc, pt = pt, n_obs = n_obs, cor_xl = cor_xl,
-                           dd = ni_desy/n_sim)
-           
-         })
+file_prefix <- "mdsu_obs3"
 
-res_sum%>%dplyr::select(sur, md_m2, set_n)%>%filter(sur%in%c('all', 'obs', 'mi'))%>%spread(key='sur', value='md_m2')
+create_res_sum(ll, load_rds = FALSE, file_prefix = file_prefix)
 
-ch_ch <- map_df(ll, 
-       .f = function(sc) {
-         x1 <- readRDS(list.files("results", paste0("mdsu_obs3_sc", sc, "_cart_min2.rds"), full.names = T))
-         
-        x1%>%
-          purrr::map_df(.f=function(x) x$ch, .id = 'sim')%>%
-          group_by(x_20)%>%
-          summarise_at(.vars = c('ml', 'rm', 'xm'), .funs = 'mean')})
+create_ch_sum(ll, load_rds = FALSE, file_prefix = file_prefix)
 
-
-saveRDS(res_sum, "sums/sum_mdsu_obs3_cart_min2.rds")
-
-
-minfo <-
-  map_df(ll, 
-         .f = function(sc) {
-   x1 <- readRDS(list.files("results", paste0("mdsu_obs3_sc", sc, "_cart_min2.rds"), full.names = T))
-   x2 <- x1%>%
-    purrr::map_df(.f=function(x) x$ct_des, .id = 'sim')%>%
-     filter(sur%in%c('mi'))%>%
-     mutate(minfo = b/(ubar + b))%>%
-     dplyr::select(sim, minfo)%>%
-     dplyr::mutate(set_n = sc)%>%
-     dplyr::left_join(setting, by = "set_n")%>%
-     dplyr::mutate(pc = pc, pt = pt, n_obs = n_obs, cor_xl = cor_xl)
-           
-  })
-
-saveRDS(minfo, "sums/minfo_mdsu_obs3_cart_min2.rds")
-
+create_minfo_sum(ll, load_rds = FALSE, file_prefix = file_prefix)
 
 #########################################################################
 # All patient data is observed  and subsample of MDs is totally random  #
@@ -70,46 +24,15 @@ saveRDS(minfo, "sums/minfo_mdsu_obs3_cart_min2.rds")
 
 ll <- seq(1,12,1)
 
-res_sum1 <-
-  map_df(ll, 
-         .f = function(sc) {
-           x1 <- readRDS(list.files("results/mdsu_obs3r", paste0("mdsu_obs3r_sc", sc, "_cart_min2.rds"), full.names = T))
-           x2 <- x1%>%
-             purrr::map_df(.f=function(x) x$ct_des, .id = 'sim')
-           
-           x2%>%
-             dplyr::group_by(sur)%>%
-             dplyr::summarise(ni_desy = sum(ni_des, na.rm = T),
-                              n_sim = n(),
-                              md_n = mean(n_l),
-                              md_m2 = mean(mean_l))%>%
-             dplyr::mutate(set_n = sc)%>%
-             dplyr::left_join(setting, by = "set_n")%>%
-             dplyr::mutate(pc = pc, pt = pt, n_obs = n_obs, cor_xl = cor_xl)
-           
-         })
+in_dir <- "results/mdsu_obs3r"
+file_prefix <- "mdsu_obs3r"
+out_dir <- "sums/mdsu_obs3r"
 
-res_sum1%>%dplyr::select(sur, md_m2, set_n)%>%filter(sur%in%c('all', 'obs', 'mi'))%>%spread(key='sur', value='md_m2')
+create_res_sum(ll, load_rds = FALSE, file_prefix = file_prefix, in_dir = in_dir, out_dir = out_dir)
 
-saveRDS(res_sum1, "sums/sum_mdsu_obs3r_cart_min2.rds")
+create_ch_sum(ll, load_rds = FALSE, file_prefix = file_prefix, in_dir = in_dir)
 
-
-minfo1 <-
-  map_df(ll, 
-         .f = function(sc) {
-           x1 <- readRDS(list.files("results/mdsu_obs3r", paste0("mdsu_obs3r_sc", sc, "_cart_min2.rds"), full.names = T))
-           x2 <- x1%>%
-             purrr::map_df(.f=function(x) x$ct_des, .id = 'sim')%>%
-             filter(sur%in%c('mi'))%>%
-             mutate(minfo = b/(ubar + b))%>%
-             dplyr::select(sim, minfo)%>%
-             dplyr::mutate(set_n = sc)%>%
-             dplyr::left_join(setting, by = "set_n")%>%
-             dplyr::mutate(pc = pc, pt = pt, n_obs = n_obs, cor_xl = cor_xl)
-           
-         })
-
-saveRDS(minfo1, "sums/minfo_mdsu_obs3r_cart_min2.rds")
+create_minfo_sum(ll, load_rds = FALSE, file_prefix = file_prefix, in_dir = in_dir, out_dir = out_dir)
 
 ################################
 # Patient data are MCAR        #
@@ -117,69 +40,19 @@ saveRDS(minfo1, "sums/minfo_mdsu_obs3r_cart_min2.rds")
 
 ll <- seq(1,12,1)
 
-do_check <- 
-map_df(ll, 
-       .f = function(sc) {
-         x1 <- readRDS(list.files("results/mcar", paste0("mdsu_obs3_smcar_sc", sc, "_cart_2min.rds"), full.names = T))
-         x2 <- x1%>% purrr::map_df(.f=function(x) x$do_ch, .id = 'sim')%>%
-           group_by(trt)%>%summarise(mean(do))
-         
-       })
+in_dir <- "results/mcar"
+file_prefix <- "mdsu_obs3_smcar"
+file_suffix <- "_cart_2min"
+out_dir <- "sums/mcar"
 
-x_check <- 
-map_df(ll, 
-       .f = function(sc) {
-         x1 <- readRDS(list.files("results/mcar", paste0("mdsu_obs3_smcar_sc", sc, "_cart_2min.rds"), full.names = T))
-         x2 <- x1%>%
-           purrr::map_df(.f=function(x) x$p_ch, .id = 'sim')%>%
-           group_by(trt,r)%>%summarise_at(.vars = c('xmean', 'pcca', 'pfull'), .funs = 'mean')%>%
-           mutate(set_n = sc)%>%
-           left_join(setting, by = 'set_n')
-         
-      })
+create_res_sum(ll, load_rds = FALSE, file_prefix = file_prefix, file_suffix = file_suffix,
+               in_dir = in_dir, out_dir = out_dir)
 
+create_ch_sum(ll, load_rds = FALSE, file_prefix = file_prefix, file_suffix = file_suffix, in_dir = in_dir)
 
-res_sum2 <-
-  map_df(ll, 
-         .f = function(sc) {
-           x1 <- readRDS(list.files("results/mcar", paste0("mdsu_obs3_smcar_sc", sc, "_cart_2min.rds"), full.names = T))
-           x2 <- x1%>%
-             purrr::map_df(.f=function(x) x$ct_des, .id = 'sim')
-           
-           x2%>%
-             dplyr::group_by(sur)%>%
-             dplyr::summarise(ni_desy = sum(ni_des, na.rm = T),
-                              n_sim = n(),
-                              md_n = mean(n_l),
-                              md_m2 = mean(mean_l))%>%
-             dplyr::mutate(set_n = sc)%>%
-             dplyr::left_join(setting, by = "set_n")%>%
-             dplyr::mutate(pc = pc, pt = pt, n_obs = n_obs, cor_xl = cor_xl)
-           
-         })
+create_minfo_sum(ll, load_rds = FALSE, file_prefix = file_prefix, file_suffix = file_suffix,
+                 in_dir = in_dir, out_dir = out_dir)
 
-res_sum2%>%dplyr::select(sur, md_m2, set_n)%>%filter(sur%in%c('all', 'obs', 'mi'))%>%spread(key='sur', value='md_m2')
-
-saveRDS(res_sum2, "sums/sum_mdsu_obs3_smcar_cart_min2.rds")
-
-
-minfo2 <-
-  map_df(ll, 
-         .f = function(sc) {
-           x1 <- readRDS(list.files("results/mcar", paste0("mdsu_obs3_smcar_sc", sc, "_cart_2min.rds"), full.names = T))
-           x2 <- x1%>%
-             purrr::map_df(.f=function(x) x$ct_des, .id = 'sim')%>%
-             filter(sur%in%c('mi'))%>%
-             mutate(minfo = b/(ubar + b),
-                    msinfo = b_subj/(u_subj + b_subj))%>%
-             dplyr::select(sim, minfo, msinfo)%>%
-             dplyr::mutate(set_n = sc)%>%
-             dplyr::left_join(setting, by = "set_n")%>%
-             dplyr::mutate(pc = pc, pt = pt, n_obs = n_obs, cor_xl = cor_xl)
-           
-         })
-
-saveRDS(minfo2, "sums/minfo_mdsu_obs3_smcar_cart_min2.rds")
 
 ################################
 # Patient data are MAR        #
@@ -187,64 +60,13 @@ saveRDS(minfo2, "sums/minfo_mdsu_obs3_smcar_cart_min2.rds")
 
 ll <- seq(1,12,1)
 
-do_check <- map_df(ll, 
-                   .f = function(sc) {
-                     x1 <- readRDS(list.files("results/mar", paste0("mdsu_obs3_smar_sc", sc, "_cart_min2.rds"), full.names = T))
-                     x2 <- x1%>% purrr::map_df(.f=function(x) x$do_ch, .id = 'sim')%>%
-                       group_by(trt)%>%summarise(mean(do))
-                     
-                   })
+in_dir <- "results/mar"
+file_prefix <- "mdsu_obs3_smar"
+out_dir <- "sums/mar"
 
-x_check <- map_df(ll, 
-                  .f = function(sc) {
-                    x1 <- readRDS(list.files("results/mar", paste0("mdsu_obs3_smar_sc", sc, "_cart_min2.rds"), full.names = T))
-                    x2 <- x1%>%
-                      purrr::map_df(.f=function(x) x$p_ch, .id = 'sim')%>%
-                      group_by(trt,r)%>%summarise_at(.vars = c('xmean', 'pcca', 'pfull'), .funs = 'mean')%>%
-                      mutate(set_n = sc)%>%
-                      left_join(setting, by = 'set_n')
-                    
-                    
-                  })
+create_res_sum(ll, load_rds = FALSE, file_prefix = file_prefix, in_dir = in_dir, out_dir = out_dir)
 
+create_ch_sum(ll, load_rds = FALSE, file_prefix = file_prefix, in_dir = in_dir)
 
-res_sum3 <-
-  map_df(ll, 
-         .f = function(sc) {
-           x1 <- readRDS(list.files("results/mar", paste0("mdsu_obs3_smar_sc", sc, "_cart_min2.rds"), full.names = T))
-           x2 <- x1%>%
-             purrr::map_df(.f=function(x) x$ct_des, .id = 'sim')
-           
-           x2%>%
-             dplyr::group_by(sur)%>%
-             dplyr::summarise(ni_desy = sum(ni_des, na.rm = T),
-                              n_sim = n(),
-                              md_n = mean(n_l))%>%
-             dplyr::mutate(set_n = sc)%>%
-             dplyr::left_join(setting, by = "set_n")%>%
-             dplyr::mutate(pc = pc, pt = pt, n_obs = n_obs, cor_xl = cor_xl)
-           
-         })
-
-saveRDS(res_sum3, "sums/sum_mdsu_obs3_smar_cart_min2.rds")
-
-minfo3 <-
-  map_df(ll, 
-         .f = function(sc) {
-           x1 <- readRDS(list.files("results/mar", paste0("mdsu_obs3_smar_sc", sc, "_cart_min2.rds"), full.names = T))
-           x2 <- x1%>%
-             purrr::map_df(.f=function(x) x$ct_des, .id = 'sim')%>%
-             filter(sur%in%c('mi'))%>%
-             mutate(minfo = b/(ubar + b),
-                    msinfo = b_subj/(u_subj + b_subj))%>%
-             dplyr::select(sim, minfo, msinfo)%>%
-             dplyr::mutate(set_n = sc)%>%
-             dplyr::left_join(setting, by = "set_n")%>%
-             dplyr::mutate(pc = pc, pt = pt, n_obs = n_obs, cor_xl = cor_xl)
-           
-         })
-
-saveRDS(minfo3, "sums/minfo_mdsu_obs3_smar_cart_min2.rds")
-
-
+create_minfo_sum(ll, load_rds = FALSE, file_prefix = file_prefix, in_dir = in_dir, out_dir = out_dir)
 
